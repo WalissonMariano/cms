@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\History;
-use App\Models\User;
+use App\Models\Register\History;
+use App\Models\Register\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 

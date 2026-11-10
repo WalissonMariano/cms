@@ -3,7 +3,7 @@
 namespace App\Services\Posts;
 
 use App\Models\Posts\Post;
-use App\Models\User;
+use App\Models\Register\User;
 use App\Services\HistoryService;
 use Illuminate\Validation\ValidationException;
 

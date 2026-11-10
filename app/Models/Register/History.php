@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Register;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,21 +31,25 @@ class History extends Model
         'created_at' => 'datetime',
     ];
 
+    // Devolve o usuário que registrou a ação.
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Devolve o registro que recebeu a ação.
     public function auditable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    // Traduz o código da ação para o rótulo da tela.
     public static function actionLabel(string $action): string
     {
         return self::ACTION_LABELS[$action] ?? $action;
     }
 
+    // Monta o nome do registro auditado para a listagem.
     public function auditableLabel(): string
     {
         $type = class_basename((string) $this->auditable_type);

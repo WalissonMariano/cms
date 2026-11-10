@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Register;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -48,26 +49,37 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
+    // Devolve a factory de usuários.
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
+
+    // Devolve o grupo do usuário.
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
+    // Lista as ações feitas por este usuário.
     public function histories(): HasMany
     {
         return $this->hasMany(History::class);
     }
 
+    // Lista as ações registradas sobre este usuário.
     public function auditHistories(): MorphMany
     {
         return $this->morphMany(History::class, 'auditable')->latest();
     }
 
+    // Informa se o usuário pertence a um dos grupos informados.
     public function isInGroup(string ...$codes): bool
     {
         return in_array($this->group?->code, $codes, true);
     }
 
+    // Informa se o usuário é administrador.
     public function isAdmin(): bool
     {
         return $this->isInGroup('ADMIN');

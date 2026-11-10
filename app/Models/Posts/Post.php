@@ -2,9 +2,9 @@
 
 namespace App\Models\Posts;
 
-use App\Models\History;
+use App\Models\Register\History;
 use App\Models\Midia\Media;
-use App\Models\User;
+use App\Models\Register\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Group;
-use App\Models\History;
-use App\Models\User;
+use App\Models\Register\Group;
+use App\Models\Register\History;
+use App\Models\Register\User;
 use Illuminate\View\View;
 
 class HomeController extends Controller

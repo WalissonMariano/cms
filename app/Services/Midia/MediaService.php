@@ -3,7 +3,7 @@
 namespace App\Services\Midia;
 
 use App\Models\Midia\Media;
-use App\Models\User;
+use App\Models\Register\User;
 use App\Services\HistoryService;
 use GdImage;
 use Illuminate\Http\UploadedFile;

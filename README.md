@@ -58,6 +58,7 @@ app/
 │   ├── Midia/
 │   └── Configuracoes/
 ├── Models/
+│   ├── Register/               # Grupo, usuário e histórico
 │   ├── Posts/
 │   ├── Midia/
 │   └── Configuracoes/

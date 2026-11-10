@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Configuracoes\Setting;
-use App\Models\History;
+use App\Models\Register\History;
 use App\Models\Midia\Media;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
 use App\Models\Posts\Tag;
-use App\Models\User;
+use App\Models\Register\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

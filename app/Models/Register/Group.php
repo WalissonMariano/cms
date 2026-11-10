@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Register;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +15,7 @@ class Group extends Model
         'description',
     ];
 
+    // Lista os usuários deste grupo.
     public function users(): HasMany
     {
         return $this->hasMany(User::class);

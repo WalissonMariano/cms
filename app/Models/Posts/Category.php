@@ -2,7 +2,7 @@
 
 namespace App\Models\Posts;
 
-use App\Models\History;
+use App\Models\Register\History;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

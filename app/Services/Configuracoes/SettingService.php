@@ -3,8 +3,8 @@
 namespace App\Services\Configuracoes;
 
 use App\Models\Configuracoes\Setting;
-use App\Models\History;
-use App\Models\User;
+use App\Models\Register\History;
+use App\Models\Register\User;
 use App\Services\HistoryService;
 use App\Services\Midia\MediaService;
 use Illuminate\Http\UploadedFile;

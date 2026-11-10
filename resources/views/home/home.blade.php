@@ -1,5 +1,5 @@
 @php
-    use App\Models\History;
+    use App\Models\Register\History;
 @endphp
 <!DOCTYPE html>
 <html lang="pt-BR">
