@@ -1,232 +1,164 @@
-# Chamados.TI
+# CMS
 
-<!-- Banner principal: docs/screenshots/banner.png -->
-![Chamados.TI](docs/screenshots/banner.png)
-
-Sistema de gerenciamento de chamados desenvolvido em Laravel. Permite controlar solicitações por projeto, atribuir tarefas a usuários, registrar anotações com anexos, acompanhar métricas operacionais e consultar o histórico de ações do sistema.
-
-## Capturas de tela
-
-### Login
-
-![Tela de login](docs/screenshots/login.png)
-
-### Home
-
-![Página inicial](docs/screenshots/home.png) 
-
-### Dashboard
-
-![Dashboard](docs/screenshots/dashboard.png) 
-
-### Tarefas
-
-![Listagem de tarefas](docs/screenshots/tasks-index.png) 
-
-![Formulário de tarefa](docs/screenshots/tasks-form.png) 
-
-### Cadastros
-
-![Cadastro de usuários](docs/screenshots/register-users.png) 
-
-![Cadastro de projetos](docs/screenshots/register-projects.png) 
-
-### Histórico
-
-![Histórico geral](docs/screenshots/histories.png) 
+Painel administrativo de um blog, feito em Laravel. Cobre posts, categorias, tags, biblioteca de mídia, configurações do site e o histórico das ações. O site público ainda não faz parte desta entrega: a quantidade de posts por página e os códigos de rastreamento já ficam gravados para essa etapa.
 
 ## Funcionalidades
 
-### Autenticação e layout
-- Login com validação de usuário ativo
-- Rotas protegidas por middleware `auth`
-- Layout principal com menu lateral e conteúdo em iframe
-- Menu lateral exibe nome e e-mail do usuário logado
-- Página de conta do usuário logado
+### Acesso
 
-### Home e dashboard
-- **Home** com cards de resumo (abertas, em andamento, resolvidas/fechadas e total)
-- Tarefas recentes com link para edição
-- Ações rápidas (nova tarefa, listagem e dashboard)
-- **Dashboard** com taxa de resolução, tempo médio, usuários/projetos ativos
-- Gráficos por status, gravidade e atividade da semana
-- Dados filtrados pelos projetos vinculados ao usuário logado
+- Login de usuário ativo e logout
+- Menu lateral com o conteúdo aberto em iframe
+- Página da conta do usuário logado
+- Home e dashboard com a contagem de usuários, grupos e histórico
 
-### Cadastros (`/register`)
-- Visível no menu apenas para usuários do grupo `ADMIN`
-- CRUD de grupos, usuários e projetos
-- Vínculo de usuários a projetos (repeater no formulário de usuário)
-- **Histórico** — listagem centralizada de todas as ações registradas no sistema, com filtros por busca, tipo de registro e ação
+O grupo **Blog** e o grupo **Cadastros** aparecem só para quem pertence ao grupo `ADMIN`.
 
-### Tarefas
-- CRUD de chamados com código sequencial no sistema
-- Anexo da tarefa (armazenamento em `storage/app/public`)
-- Fluxo de status: `open` → `in_progress` → `resolved` → `closed`
-- Anotações com autor automático (usuário logado), anexos e repeater na edição
-- Projetos disponíveis limitados aos vinculados ao usuário
+### Blog
 
-### Histórico de auditoria
-- Registro automático de ações via `HistoryService`
-- Ações registradas: `created`, `updated`, `deleted`, `assigned`, `resolved`, `closed`
-- Entidades auditadas: usuários, projetos, tarefas e anotações
-- Exibição do histórico nos formulários de edição (usuário, projeto, tarefa e anotação)
-- Listagem geral em **Cadastros → Histórico** (somente admin)
+- Posts com título, slug, resumo, status, data de publicação e campos de SEO
+- Editor TipTap (negrito, itálico, título, listas, link e imagem)
+- Status `draft`, `published`, `scheduled` e `trashed`
+- Publicado sem data usa o momento atual; agendado exige data futura
+- A lixeira é um status. A exclusão definitiva só aparece quando o post já está nela
+- Categorias com pai opcional e tags. Tags novas podem ser criadas no formulário do post
+- O slug nasce do título e ganha um sufixo numérico se já existir
 
-### Regras de negócio
-| Regra | Comportamento |
-|-------|---------------|
-| Menu Cadastros | Visível apenas para grupo `ADMIN` |
-| Atribuir a mim / Resolvido | Apenas grupos `ADMIN` e `SUPORTE` |
-| Tarefa não aberta | Campos bloqueados; só anotações editáveis |
-| Tarefa fechada | Tudo somente leitura, inclusive anotações |
-| Exclusão de tarefa | Usuários só excluem tarefas abertas; administrador exclui em qualquer status |
-| Edição de anotação | Somente o usuário que criou a anotação |
-| Projetos no formulário | Limitados aos vinculados ao usuário logado |
+### Mídia
 
-### Grupos padrão
-| Código | Descrição |
-|--------|-----------|
-| `ADMIN` | Administrador |
-| `SUPORTE` | Suporte |
-| `USUARIOS` | Usuários |
+- Upload de imagem no disco `public`
+- Miniatura e tamanho médio gerados com GD
+- A imagem do conteúdo e a imagem de compartilhamento saem dessa biblioteca
 
-### Pendente
-- Envio de e-mail
+### Configurações
+
+Uma tela guarda título, slogan, logotipo, posts por página, links de Instagram, Facebook, X e YouTube, e o código de rastreamento.
+
+### Histórico
+
+Criar, atualizar e excluir post, categoria, tag, mídia, configuração e usuário gera um registro. A listagem geral fica em **Cadastros → Histórico**, com filtro por tipo e ação.
 
 ## Tecnologias
 
-- PHP 8.1+
+- PHP 8.1+ com extensão GD
 - Laravel 10
-- Laravel Sanctum
-- Vite
 - PostgreSQL
+- Vite
+- TipTap 2
 
-## Estrutura do banco
+A cor de destaque da interface é o azul `#2563EB`.
 
-| Tabela | Descrição |
-|--------|-----------|
-| `groups` | Grupos de usuários |
-| `users` | Usuários do sistema |
-| `projects` | Projetos |
-| `project_user` | Vínculo usuário ↔ projeto |
-| `tasks` | Chamados/tarefas |
-| `task_notes` | Anotações e anexos das tarefas |
-| `histories` | Log de auditoria (ações nos registros) |
+## Estrutura
 
-## Estrutura do projeto
+Cada módulo novo tem pasta própria em model, controller, service, view e rota.
 
 ```
 app/
 ├── Http/Controllers/
-│   ├── Auth/LoginController.php
-│   ├── DashboardController.php
-│   ├── GroupController.php
-│   ├── HistoryController.php
-│   ├── HomeController.php
-│   ├── ProjectController.php
-│   ├── TaskController.php
-│   ├── TaskNoteController.php
-│   └── UserController.php
+│   ├── Posts/                  # Posts, categorias e tags
+│   ├── Midia/
+│   └── Configuracoes/
 ├── Models/
+│   ├── Posts/
+│   ├── Midia/
+│   └── Configuracoes/
 └── Services/
-    ├── HistoryService.php        # Registro de ações de auditoria
-    └── TaskStatsService.php      # Consultas compartilhadas home/dashboard
+    ├── HistoryService.php
+    ├── Posts/
+    ├── Midia/
+    └── Configuracoes/
 
 resources/views/
-├── auth/                         # Login
-├── layouts/                      # Menu principal
-├── home/                         # Página inicial
-├── dashboard/                    # Dashboard
-├── account/                      # Minha conta
-├── register/
-│   ├── groups/                   # Grupos
-│   ├── users/                    # Usuários
-│   ├── projects/                 # Projetos
-│   └── project-user/             # Vínculo usuário-projeto
-├── tasks/                        # Tarefas
-├── task-notes/                   # Anotações
-└── histories/                    # Listagem e partials de histórico
+├── auth/                       # Login
+├── layouts/                    # Menu
+├── home/
+├── dashboard/
+├── account/
+├── posts/                      # Posts, categorias e tags
+├── midia/
+├── configuracoes/
+├── register/                   # Grupos e usuários
+└── histories/
+
+routes/
+├── web.php                     # Login, menu, home e dashboard
+├── posts/
+├── midia/
+└── configuracoes/
 ```
+
+## Banco
+
+| Tabela | Conteúdo |
+|--------|----------|
+| `groups` | Grupos de acesso |
+| `users` | Usuários do painel |
+| `posts` | Conteúdo, status, SEO e imagem de compartilhamento |
+| `categories` | Categorias, com `parent_id` opcional |
+| `tags` | Tags |
+| `category_post` | Posts e categorias |
+| `post_tag` | Posts e tags |
+| `medias` | Arquivo original, miniatura, médio e texto alternativo |
+| `settings` | Uma linha por chave de configuração |
+| `histories` | Auditoria das ações |
 
 ## Instalação
 
 ```bash
-# Clonar o repositório e entrar na pasta
-cd tickets
-
-# Instalar dependências
 composer install
 npm install
 
-# Configurar ambiente
 cp .env.example .env
 php artisan key:generate
+```
 
-# Configurar banco PostgreSQL no .env, rodar migrations e popular dados de demo
-php artisan migrate --seed
+Ajuste `APP_NAME`, `APP_URL` e a conexão PostgreSQL no `.env`. As sessões usam o driver `database`.
 
-# Link simbólico para anexos públicos
+```bash
+php artisan migrate
 php artisan storage:link
-
-# Compilar assets
 npm run dev
 ```
 
-Para **apenas refrescar** os dados de demonstração (mantém o schema):
-
-```bash
-php artisan db:seed
-```
+Com o [Laravel Herd](https://herd.laravel.com), a pasta `cms` responde em `http://cms.test`. Para os assets de produção, use `npm run build`.
 
 ### Acesso inicial
 
-As migrations criam os grupos obrigatórios (`ADMIN`, `SUPORTE`, `USUARIOS`) e o administrador. O seeder popula projetos, tarefas, anotações e histórico de demonstração.
+A migration cria o grupo `ADMIN` e um administrador.
 
 | Perfil | E-mail | Senha |
 |--------|--------|-------|
 | Administrador | `admin@admin.com` | `admin` |
-| Suporte | `suporte@chamados.ti` | `password` |
-| Usuário | `ana.silva@chamados.ti` | `password` |
-| Usuário | `carlos.souza@chamados.ti` | `password` |
 
-Com [Laravel Herd](https://herd.laravel.com), o projeto pode ser acessado em `http://tickets.test`.
-
-## Rotas principais
+## Rotas
 
 | Rota | Descrição |
 |------|-----------|
-| `/` | Redireciona para login |
-| `/login` | Tela de autenticação |
-| `/menu` | Layout com menu e iframe |
-| `/home` | Home com resumo e tarefas recentes |
-| `/dashboard` | Dashboard com métricas |
-| `/tasks` | Listagem de tarefas |
-| `/tasks/create` | Nova tarefa |
-| `/tasks/{task}/edit` | Edição de tarefa |
-| `/account` | Dados da conta logada |
-| `/register/groups` | Cadastro de grupos |
-| `/register/users` | Cadastro de usuários |
-| `/register/projects` | Cadastro de projetos |
-| `/register/histories` | Histórico geral do sistema (admin) |
+| `/login` | Autenticação |
+| `/menu` | Menu e iframe |
+| `/home` | Página inicial |
+| `/dashboard` | Resumo |
+| `/account` | Conta do usuário logado |
+| `/posts` | Posts |
+| `/posts/categories` | Categorias |
+| `/posts/tags` | Tags |
+| `/midia` | Biblioteca de imagens |
+| `/configuracoes` | Configurações do site |
+| `/register/groups` | Grupos |
+| `/register/users` | Usuários |
+| `/register/histories` | Histórico |
 
-## Desenvolvimento
+As rotas do blog, da mídia, das configurações e dos cadastros exigem o grupo `ADMIN`.
+
+## Agendamento
+
+O comando `posts:publish-scheduled` passa os posts de `scheduled` para `published` quando `published_at` chega. Ele está agendado para rodar a cada minuto.
 
 ```bash
-# Servidor de desenvolvimento (Vite)
-npm run dev
-
-# Build para produção
-npm run build
-
-# Rodar testes
-php artisan test
+php artisan posts:publish-scheduled
+php artisan schedule:work
 ```
 
-## Paleta visual
-
-- Verde primário: `#16a34a`
-- Sidebar: `#2C2C2C`
-- Fundo da área de conteúdo: `#f1f5f9`
+O agendador também executa `migrate:fresh --seed --force` todo dia às 00:01 e às 12:01. Esse comando apaga o banco. Remova essas duas linhas de `app/Console/Kernel.php` antes de usar o painel com dados reais.
 
 ## Licença
 
