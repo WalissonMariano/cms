@@ -1,0 +1,22 @@
+---
+description: Cada módulo do CMS fica na própria pasta de model, controller, service, view e rota
+alwaysApply: true
+---
+
+# Módulos
+
+O sistema é dividido em módulos. Cada módulo tem a mesma pasta em model, controller, service, view e rota. Não coloque classes nem rotas de módulos diferentes na raiz dessas pastas.
+
+Pastas PHP em StudlyCase, para o autoload. Views em minúsculas. Exemplo do módulo de cadastros:
+
+- `app/Models/Cadastros/User.php` → `App\Models\Cadastros\User`
+- `app/Http/Controllers/Cadastros/UserController.php`
+- `app/Services/Cadastros/UserService.php`
+- `resources/views/cadastros/users/index-users.blade.php`
+- `resources/views/cadastros/users/form-users.blade.php`
+- `routes/cadastros/users.php`
+- `routes/cadastros/groups.php`
+
+`routes/web.php` fica só com login, logout, menu, home e dashboard, e inclui os arquivos de cada módulo com `require`. O prefixo e o nome da rota nascem no arquivo do módulo (`cadastros.users.index`).
+
+Um módulo novo repete esse formato: `Posts`, `Midia`, `Configuracoes`, com a pasta `routes/posts/`. Auth, menu, home e dashboard continuam em `routes/web.php`.

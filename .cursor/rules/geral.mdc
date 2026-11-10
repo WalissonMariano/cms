@@ -1,0 +1,28 @@
+---
+description: Clean code, responsabilidade única, tamanho de método e comentários
+alwaysApply: true
+---
+
+# Código
+
+Cada classe e cada método têm uma única responsabilidade. Um método faz uma ação. Validação HTTP, regra de negócio e persistência não ficam no mesmo método.
+
+Um método tem no máximo 25 linhas. Ao passar de 20, extraia um método privado ou um service.
+
+Todo método leva um comentário em português, imediatamente acima, dizendo o que ele faz.
+
+```php
+// Cria o usuário e devolve o redirect da listagem.
+public function store(Request $request): RedirectResponse
+{
+    $user = $this->users->create($request->validated());
+
+    return redirect()
+        ->route('cadastros.users.index')
+        ->with('success', 'Usuário cadastrado com sucesso.');
+}
+```
+
+O controller recebe a request, autoriza, chama o service e devolve view ou redirect. Regra de negócio, cálculo e orquestração de mais de um model ficam em `app/Services/{Modulo}`.
+
+Não crie um controller longo para evitar um service. Se a ação passar de validar e redirecionar, crie o service do módulo.

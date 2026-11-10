@@ -1,0 +1,23 @@
+---
+description: Tema azul padrão do CMS
+globs: resources/css/**/*.css
+alwaysApply: false
+---
+
+# Tema
+
+A cor de destaque é o azul `#2563EB`. Botão principal, link ativo, ícone de destaque e foco usam essa cor. Não volte o verde no lugar dela.
+
+A escala que acompanha o azul:
+
+- Fundo claro `#EFF6FF`
+- Fundo de ícone e badge `#DBEAFE`
+- Borda `#BFDBFE`
+- Foco `#93C5FD`
+- Destaque claro `#60A5FA`
+- Principal `#2563EB`
+- Hover `#1D4ED8`
+- Texto sobre fundo claro `#1E40AF`
+- Painel escuro `#1E3A8A`
+
+Vermelho continua só para erro e exclusão. Cinza continua nas superfícies neutras.

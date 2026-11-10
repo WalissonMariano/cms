@@ -1,0 +1,29 @@
+Esse projeto vai ser um cms para gerenciar os posts do meu blog.
+
+preciso que tenha um crud para o conteudo do blog, contendo:
+
+1 - Gestão de Conteúdo
+CRUD de Posts:
+Título, Slug (gerado automaticamente amigável para SEO), Conteúdo e Resumo/Excerpt.
+Status do Post: Rascunho, Publicado, Agendado (muito útil para programar postagens) e Lixeira.
+SEO On-Page básico: Meta Title, Meta Description e imagem de compartilhamento (Open Graph).
+Categorias e Tags:
+Sistema de taxonomia para organizar os posts (categorias hierárquicas ou simples e tags livres).
+
+2 - Gestao de midia
+Gerenciador de Uploads: Uma biblioteca de mídia centralizada onde você pode subir imagens, redimensioná-las e reutilizá-las.
+
+3 - Editor de texto Rico :
+
+Editor de Texto Rico (WYSIWYG ou Markdown)
+A experiência de escrita é fundamental. Você precisará integrar um bom editor no painel administrativo:
+
+Editores visuais modernos: TipTap, CKEditor, TinyMCE ou até mesmo editores baseados em blocos (como o Editor.js ou Notion-like).
+
+4 -  Configurações Gerais do Blog
+Uma tela de configurações globais para gerenciar metadados do site sem precisar mexer no código:
+Título do site, slogan e logotipo.
+Quantidade de posts exibidos por página na paginação.
+Links para redes sociais e códigos de rastreamento (como Google Analytics ou Pixel).
+
+5 - todas os ajustes devem gravar no log

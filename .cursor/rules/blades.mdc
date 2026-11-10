@@ -1,0 +1,28 @@
+---
+description: Padrão visual das blades de listagem e de cadastro
+globs: resources/views/**/*.blade.php
+alwaysApply: false
+---
+
+# Blades
+
+Listagem segue `resources/views/register/users/index-users.blade.php`. Cadastro e edição seguem `resources/views/register/users/form-users.blade.php`. Reutilize as classes e o CSS. Não crie outro layout de CRUD.
+
+Listagem (`index-{recurso}.blade.php`):
+
+- `@vite(['resources/css/components/index-page.css'])` e `<body class="index-page">`
+- Cabeçalho com título, descrição e botão de criar
+- Alerta `session('success')`, busca em GET e botão Filtrar
+- Tabela dentro de `index-page-card`, estado vazio e badge de status
+- Rodapé com a contagem e `{{ $registros->links('partials.pagination') }}`
+
+Cadastro (`form-{recurso}.blade.php`):
+
+- `$isEdit = isset($model)` no topo
+- `@vite(['resources/css/components/form-page.css'])` e `<body class="form-page">`
+- Título e descrição mudam conforme `$isEdit`
+- Erros em `form-page-alert--error`
+- Um formulário com `@csrf`, `@method('PUT')` na edição, campos em `form-page-grid`
+- Valor com `old('campo', $model->campo ?? '')` e erro em `form-page-error`
+- Ações fora do form: Excluir só na edição, Cancelar e o submit com `form="{id}-form"`
+- Na edição, inclua o histórico com `histories.partials.audit-list` quando o módulo gravar log
