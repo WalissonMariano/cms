@@ -159,8 +159,6 @@ php artisan posts:publish-scheduled
 php artisan schedule:work
 ```
 
-O agendador também executa `migrate:fresh --seed --force` todo dia às 00:01 e às 12:01. Esse comando apaga o banco. Remova essas duas linhas de `app/Console/Kernel.php` antes de usar o painel com dados reais.
-
 ## Licença
 
 Este projeto é open-source sob a licença [MIT](https://opensource.org/licenses/MIT).
