@@ -1,28 +1,25 @@
 ---
-description: Clean code, responsabilidade única, tamanho de método e comentários
+description: Clean code do CMS — uma ação por método, métodos curtos e comentário em português
 alwaysApply: true
 ---
 
 # Código
 
-Cada classe e cada método têm uma única responsabilidade. Um método faz uma ação. Validação HTTP, regra de negócio e persistência não ficam no mesmo método.
+Cada classe e cada método fazem uma ação. Validação HTTP, regra de negócio e persistência não ficam no mesmo método.
 
 Um método tem no máximo 25 linhas. Ao passar de 20, extraia um método privado ou um service.
 
 Todo método leva um comentário em português, imediatamente acima, dizendo o que ele faz.
 
 ```php
-// Cria o usuário e devolve o redirect da listagem.
-public function store(Request $request): RedirectResponse
+// Cria o post e registra o histórico.
+public function create(array $data, User $author): Post
 {
-    $user = $this->users->create($request->validated());
+    $post = Post::create($this->attributes($data, $author));
+    $this->history->recordCreated($post);
 
-    return redirect()
-        ->route('cadastros.users.index')
-        ->with('success', 'Usuário cadastrado com sucesso.');
+    return $post;
 }
 ```
 
-O controller recebe a request, autoriza, chama o service e devolve view ou redirect. Regra de negócio, cálculo e orquestração de mais de um model ficam em `app/Services/{Modulo}`.
-
-Não crie um controller longo para evitar um service. Se a ação passar de validar e redirecionar, crie o service do módulo.
+Classe, método e variável em inglês. Texto visto pelo usuário em português.

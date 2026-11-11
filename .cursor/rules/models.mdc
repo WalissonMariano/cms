@@ -1,0 +1,21 @@
+---
+description: Models por módulo, com relações, constantes e fillable explícito
+globs: app/Models/**/*.php
+alwaysApply: false
+---
+
+# Models
+
+O model fica em `app/Models/{Modulo}` e representa uma tabela. Relação, constante e rótulo ficam nele. Não grave histórico nem valide HTTP no model.
+
+Declare `$fillable`. Status e rótulos de tela são constantes da classe. Relação polimórfica de auditoria usa `App\Models\Register\History`.
+
+```php
+// Devolve o autor do post.
+public function user(): BelongsTo
+{
+    return $this->belongsTo(User::class);
+}
+```
+
+`User` de autenticação é `App\Models\Register\User`. Não recrie `App\Models\User`.

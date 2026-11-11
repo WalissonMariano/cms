@@ -1,22 +1,28 @@
 ---
-description: Cada módulo do CMS fica na própria pasta de model, controller, service, view e rota
-alwaysApply: true
+description: Pastas de módulo em model, controller, service, view e rota
+globs: app/**/*.php,routes/**/*.php,resources/views/**/*.blade.php
+alwaysApply: false
 ---
 
 # Módulos
 
-O sistema é dividido em módulos. Cada módulo tem a mesma pasta em model, controller, service, view e rota. Não coloque classes nem rotas de módulos diferentes na raiz dessas pastas.
+Cada módulo repete o mesmo nome de pasta. PHP em StudlyCase. View e rota em minúsculas. Não misture módulos na raiz dessas pastas.
 
-Pastas PHP em StudlyCase, para o autoload. Views em minúsculas. Exemplo do módulo de cadastros:
+| Módulo | PHP | View | Rota |
+| --- | --- | --- | --- |
+| Register | `App\Models\Register` | `resources/views/register` | `register.*` |
+| Posts | `App\Models\Posts` | `resources/views/posts` | `posts.*` |
+| Midia | `App\Models\Midia` | `resources/views/midia` | `midia.*` |
+| Configuracoes | `App\Models\Configuracoes` | `resources/views/configuracoes` | `configuracoes.*` |
 
-- `app/Models/Cadastros/User.php` → `App\Models\Cadastros\User`
-- `app/Http/Controllers/Cadastros/UserController.php`
-- `app/Services/Cadastros/UserService.php`
-- `resources/views/cadastros/users/index-users.blade.php`
-- `resources/views/cadastros/users/form-users.blade.php`
-- `routes/cadastros/users.php`
-- `routes/cadastros/groups.php`
+Exemplo completo de Posts:
 
-`routes/web.php` fica só com login, logout, menu, home e dashboard, e inclui os arquivos de cada módulo com `require`. O prefixo e o nome da rota nascem no arquivo do módulo (`cadastros.users.index`).
+- `app/Models/Posts/Post.php`
+- `app/Http/Controllers/Posts/PostController.php`
+- `app/Services/Posts/PostService.php`
+- `resources/views/posts/posts/index-posts.blade.php`
+- `routes/posts/posts.php`
 
-Um módulo novo repete esse formato: `Posts`, `Midia`, `Configuracoes`, com a pasta `routes/posts/`. Auth, menu, home e dashboard continuam em `routes/web.php`.
+Grupo, usuário e histórico já têm model em `Register`. Os controllers desses três continuam em `app/Http/Controllers` e as rotas em `routes/web.php`. Não os mova sem pedido.
+
+Um módulo novo ganha as cinco pastas. `routes/web.php` só faz o `require`.

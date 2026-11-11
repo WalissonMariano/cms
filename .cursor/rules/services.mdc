@@ -1,0 +1,26 @@
+---
+description: Regra de negócio nos services do módulo, com histórico
+globs: app/Services/**/*.php
+alwaysApply: false
+---
+
+# Services
+
+Regra de negócio, cálculo e orquestração de mais de um model ficam em `app/Services/{Modulo}`. O service não lê `Request` nem devolve redirect.
+
+Criar, atualizar e excluir gravam o histórico com `HistoryService`. Um método público faz uma ação e delega o detalhe a métodos privados.
+
+```php
+// Cria o post, vincula a taxonomia e registra o histórico.
+public function create(array $data, User $author): Post
+{
+    $this->assertSchedule($data);
+    $post = Post::create($this->attributes($data, $author));
+    $this->syncTaxonomy($post, $data);
+    $this->history->recordCreated($post);
+
+    return $post;
+}
+```
+
+Slug único nasce em `SlugService`. Data inválida para o status sobe `ValidationException` no campo do formulário.

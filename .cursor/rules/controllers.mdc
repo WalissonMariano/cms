@@ -1,0 +1,25 @@
+---
+description: Controller fino — autoriza, valida, chama o service e responde
+globs: app/Http/Controllers/**/*.php
+alwaysApply: false
+---
+
+# Controllers
+
+O controller recebe a request, autoriza, valida, chama o service e devolve view ou redirect. Regra de negócio fica no service do módulo.
+
+Telas de Blog e Cadastros usam o middleware `admin` no construtor.
+
+A validação fica num método privado `validated`. Não use Form Request.
+
+```php
+// Grava o post e volta para a listagem.
+public function store(Request $request): RedirectResponse
+{
+    $this->posts->create($this->validated($request), $request->user());
+
+    return redirect()->route('posts.index')->with('success', 'Post cadastrado com sucesso.');
+}
+```
+
+Listagem pagina, filtra pela query e devolve a view. Edição carrega o registro e o histórico. Sucesso volta para a listagem com `session('success')`.

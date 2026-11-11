@@ -1,0 +1,19 @@
+---
+description: Rotas por módulo, com prefixo e nome no próprio arquivo
+globs: routes/**/*.php
+alwaysApply: false
+---
+
+# Rotas
+
+`routes/web.php` fica com login, logout, menu, home, dashboard e conta. Cada módulo entra com `require`. Prefixo, middleware e nome nascem no arquivo do módulo.
+
+```php
+Route::middleware('admin')->prefix('posts')->name('posts.')->group(function () {
+    Route::get('/', [PostController::class, 'index'])->name('index');
+});
+```
+
+Nomes no formato `{modulo}.{recurso}.{acao}`: `posts.index`, `posts.categories.index`, `midia.index`, `configuracoes.edit`.
+
+Em Posts, inclua categorias e tags antes de `posts/{post}`, para o parâmetro não capturar esses caminhos. Blog, mídia, configurações e cadastros exigem o middleware `admin`.
