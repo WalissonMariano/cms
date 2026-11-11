@@ -1,18 +1,21 @@
 # Estrutura do banco de dados
 
-Schema PostgreSQL do **Chamados.TI** (Laravel 10). Fonte de verdade: migrations em `database/migrations/`.
+Schema PostgreSQL do CMS (Laravel 10). Fonte de verdade: migrations em `database/migrations/`.
 
 ## Visão geral
 
 | Tabela | Papel |
 |--------|--------|
-| `groups` | Perfis de acesso (`ADMIN`, `SUPORTE`, `USUARIOS`) |
-| `users` | Usuários do sistema |
-| `projects` | Projetos / áreas de atendimento |
-| `project_user` | Vínculo N:N usuário ↔ projeto |
-| `tasks` | Chamados / solicitações |
-| `task_notes` | Anotações e anexos das tarefas |
-| `histories` | Auditoria polimórfica de ações |
+| `groups` | Perfil de acesso. A migration grava `ADMIN` |
+| `users` | Usuários do painel |
+| `categories` | Categorias do blog, com pai opcional |
+| `tags` | Tags do blog |
+| `medias` | Arquivos da biblioteca de mídia |
+| `posts` | Posts do blog |
+| `category_post` | Vínculo N:N post ↔ categoria |
+| `post_tag` | Vínculo N:N post ↔ tag |
+| `settings` | Configurações do site, uma linha por chave |
+| `histories` | Auditoria polimórfica das ações |
 | `sessions` | Sessões web (`SESSION_DRIVER=database`) |
 
 ## Diagrama ER
@@ -20,15 +23,15 @@ Schema PostgreSQL do **Chamados.TI** (Laravel 10). Fonte de verdade: migrations 
 ```mermaid
 erDiagram
   groups ||--o{ users : "group_id"
-  users ||--o{ project_user : "user_id"
-  projects ||--o{ project_user : "project_id"
-  projects ||--o{ tasks : "project_id"
-  users ||--o{ tasks : "reporter_id"
-  users ||--o{ tasks : "assignee_id"
-  tasks ||--o{ task_notes : "task_id"
-  users ||--o{ task_notes : "user_id"
+  users ||--o{ posts : "user_id"
+  users ||--o{ medias : "user_id"
   users ||--o{ histories : "user_id"
-  users ||--o{ sessions : "user_id"
+  categories ||--o{ categories : "parent_id"
+  categories ||--o{ category_post : "category_id"
+  posts ||--o{ category_post : "post_id"
+  posts ||--o{ post_tag : "post_id"
+  tags ||--o{ post_tag : "tag_id"
+  medias ||--o{ posts : "og_media_id"
 
   groups {
     bigint id PK
@@ -49,42 +52,67 @@ erDiagram
     timestamps timestamps
   }
 
-  projects {
+  categories {
     bigint id PK
     string name
-    boolean is_active
-    timestamps timestamps
-  }
-
-  project_user {
-    bigint id PK
-    bigint user_id FK
-    bigint project_id FK
-    timestamps timestamps
-  }
-
-  tasks {
-    bigint id PK
-    bigint project_id FK
-    string code
-    timestamp requested_at
-    timestamp resolved_at
-    bigint reporter_id FK
-    bigint assignee_id FK
-    enum severity
-    enum status
-    string title
+    string slug UK
+    bigint parent_id FK
     text description
-    string attachment
     timestamps timestamps
   }
 
-  task_notes {
+  tags {
     bigint id PK
-    bigint task_id FK
+    string name
+    string slug UK
+    timestamps timestamps
+  }
+
+  medias {
+    bigint id PK
     bigint user_id FK
-    text note
-    string attachment
+    string disk
+    string path
+    string thumbnail_path
+    string medium_path
+    string filename
+    string mime
+    bigint size
+    integer width
+    integer height
+    string alt
+    timestamps timestamps
+  }
+
+  posts {
+    bigint id PK
+    bigint user_id FK
+    string title
+    string slug UK
+    text excerpt
+    longText content
+    string status
+    timestamp published_at
+    string meta_title
+    string meta_description
+    bigint og_media_id FK
+    timestamps timestamps
+  }
+
+  category_post {
+    bigint category_id PK
+    bigint post_id PK
+  }
+
+  post_tag {
+    bigint post_id PK
+    bigint tag_id PK
+  }
+
+  settings {
+    bigint id PK
+    string key UK
+    text value
     timestamps timestamps
   }
 
@@ -99,7 +127,7 @@ erDiagram
 
   sessions {
     string id PK
-    bigint user_id FK
+    bigint user_id
     string ip_address
     text user_agent
     longText payload
@@ -114,11 +142,11 @@ erDiagram
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
 | `id` | bigint | PK | Identificador |
-| `code` | string | unique | Código do perfil (`ADMIN`, `SUPORTE`, `USUARIOS`) |
+| `code` | string | unique | Código do perfil |
 | `description` | string | | Nome legível |
 | `created_at` / `updated_at` | timestamps | | |
 
-Dados obrigatórios inseridos na migration `2026_07_07_000004_seed_groups`.
+A migration `2026_07_07_000004_seed_groups` grava o grupo `ADMIN` (Administrador).
 
 ### `users`
 
@@ -134,81 +162,118 @@ Dados obrigatórios inseridos na migration `2026_07_07_000004_seed_groups`.
 | `remember_token` | string | nullable | |
 | `created_at` / `updated_at` | timestamps | | |
 
-Admin padrão (`admin@admin.com`) criado na migration `2026_07_07_000003_seed_admin_user`.
+O usuário `admin@admin.com` é criado na migration `2026_07_07_000003_seed_admin_user`, no grupo `ADMIN`.
 
-### `projects`
+### `categories`
 
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
 | `id` | bigint | PK | Identificador |
-| `name` | string | | Nome do projeto |
-| `is_active` | boolean | default `true` | |
+| `name` | string | | Nome |
+| `slug` | string | unique | Identificador público |
+| `parent_id` | bigint | nullable, FK → `categories.id`, `nullOnDelete` | Categoria pai |
+| `description` | text | nullable | |
 | `created_at` / `updated_at` | timestamps | | |
 
-### `project_user`
-
-Pivot N:N entre usuários e projetos.
+### `tags`
 
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
 | `id` | bigint | PK | Identificador |
-| `user_id` | bigint | FK → `users.id`, `cascadeOnDelete` | |
-| `project_id` | bigint | FK → `projects.id`, `cascadeOnDelete` | |
+| `name` | string | | Nome |
+| `slug` | string | unique | Identificador público |
 | `created_at` / `updated_at` | timestamps | | |
 
-Unique composto: `(user_id, project_id)`.
+### `medias`
 
-### `tasks`
+Biblioteca de imagens. A tabela se chama `medias`.
 
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
 | `id` | bigint | PK | Identificador |
-| `project_id` | bigint | FK → `projects.id`, `cascadeOnDelete` | Projeto |
-| `code` | string | unique com `project_id` | Código do chamado |
-| `requested_at` | timestamp | | Data da solicitação |
-| `resolved_at` | timestamp | nullable | Preenchido ao resolver |
-| `reporter_id` | bigint | FK → `users.id`, `restrictOnDelete` | Solicitante |
-| `assignee_id` | bigint | FK → `users.id`, nullable, `nullOnDelete` | Responsável |
-| `severity` | enum | `low`, `medium`, `high`, `critical` | Gravidade |
-| `status` | enum | `open`, `in_progress`, `resolved`, `closed` | Status |
-| `title` | string | | Título |
-| `description` | text | | Descrição |
-| `attachment` | string | nullable | Caminho do anexo em `storage` |
+| `user_id` | bigint | FK → `users.id`, `restrictOnDelete` | Quem enviou |
+| `disk` | string | default `public` | Disco do Laravel |
+| `path` | string | | Arquivo original |
+| `thumbnail_path` | string | | Miniatura |
+| `medium_path` | string | | Tamanho médio |
+| `filename` | string | | Nome original |
+| `mime` | string | | Tipo do arquivo |
+| `size` | bigint | | Tamanho em bytes |
+| `width` | integer | nullable | Largura |
+| `height` | integer | nullable | Altura |
+| `alt` | string | nullable | Texto alternativo |
 | `created_at` / `updated_at` | timestamps | | |
 
-**Código sequencial:** na aplicação o próximo `code` é gerado de forma **global** (máximo entre todas as tarefas + 1), não reinicia por projeto. A constraint unique `(project_id, code)` permanece no banco.
-
-Fluxo de status: `open` → `in_progress` → `resolved` → `closed`.
-
-### `task_notes`
+### `posts`
 
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
 | `id` | bigint | PK | Identificador |
-| `task_id` | bigint | FK → `tasks.id`, `cascadeOnDelete` | Tarefa |
 | `user_id` | bigint | FK → `users.id`, `restrictOnDelete` | Autor |
-| `note` | text | | Texto da anotação |
-| `attachment` | string | nullable | Anexo |
+| `title` | string | | Título |
+| `slug` | string | unique | Identificador público |
+| `excerpt` | text | nullable | Resumo |
+| `content` | longText | nullable | HTML do editor |
+| `status` | string | | `draft`, `published`, `scheduled` ou `trashed` |
+| `published_at` | timestamp | nullable | Data de publicação |
+| `meta_title` | string | nullable | Título de SEO |
+| `meta_description` | string(320) | nullable | Descrição de SEO |
+| `og_media_id` | bigint | nullable, FK → `medias.id`, `nullOnDelete` | Imagem de compartilhamento |
 | `created_at` / `updated_at` | timestamps | | |
+
+`status` é texto na aplicação, sem enum no banco. A lixeira também é um status: a exclusão física só ocorre quando o post já está `trashed`.
+
+### `category_post`
+
+Pivot N:N. Sem `id` e sem timestamps.
+
+| Coluna | Tipo | Restrições | Descrição |
+|--------|------|------------|-----------|
+| `category_id` | bigint | PK, FK → `categories.id`, `cascadeOnDelete` | |
+| `post_id` | bigint | PK, FK → `posts.id`, `cascadeOnDelete` | |
+
+### `post_tag`
+
+Pivot N:N. Sem `id` e sem timestamps.
+
+| Coluna | Tipo | Restrições | Descrição |
+|--------|------|------------|-----------|
+| `post_id` | bigint | PK, FK → `posts.id`, `cascadeOnDelete` | |
+| `tag_id` | bigint | PK, FK → `tags.id`, `cascadeOnDelete` | |
+
+### `settings`
+
+Uma linha por chave. O valor é texto, inclusive quando representa um id de mídia ou um número.
+
+| Coluna | Tipo | Restrições | Descrição |
+|--------|------|------------|-----------|
+| `id` | bigint | PK | Identificador |
+| `key` | string | unique | Chave |
+| `value` | text | nullable | Valor |
+| `created_at` / `updated_at` | timestamps | | |
+
+Chaves usadas pela aplicação: `site_title`, `tagline`, `logo_media_id`, `posts_per_page`, `social_instagram`, `social_facebook`, `social_x`, `social_youtube`, `social_linkedin`, `social_github`, `social_email` e `tracking_code`. O padrão de `posts_per_page` é `10` enquanto a chave não foi salva. `logo_media_id` aponta para `medias.id` só como texto, sem chave estrangeira.
 
 ### `histories`
 
-Log de auditoria polimórfico (sem `updated_at`).
+Log de auditoria polimórfico. Não tem `updated_at`.
 
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
 | `id` | bigint | PK | Identificador |
 | `user_id` | bigint | FK → `users.id`, `restrictOnDelete` | Quem executou a ação |
-| `auditable_type` | string | | Classe do modelo (`App\Models\Task`, etc.) |
+| `auditable_type` | string | | Classe do model |
 | `auditable_id` | bigint | | ID do registro auditado |
-| `action` | string | | `created`, `updated`, `deleted`, `assigned`, `resolved`, `closed` |
-| `created_at` | timestamp | | Momento da ação |
+| `action` | string | | `created`, `updated` ou `deleted` |
+| `created_at` | timestamp | default agora | Momento da ação |
 
-Entidades auditadas na aplicação: usuários, projetos, tarefas e anotações.
+Índice composto em `(auditable_type, auditable_id)`.
+
+A aplicação grava histórico de usuário, post, categoria, tag, mídia e configuração.
 
 ### `sessions`
 
-Armazena sessões do Laravel quando `SESSION_DRIVER=database`.
+Sessões do Laravel quando `SESSION_DRIVER=database`. `user_id` é indexado e pode ser nulo. Não há chave estrangeira para `users`.
 
 | Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
@@ -223,12 +288,13 @@ Armazena sessões do Laravel quando `SESSION_DRIVER=database`.
 
 ```
 groups 1 ── * users
-users * ── * projects          (via project_user)
-projects 1 ── * tasks
-users 1 ── * tasks             (reporter / assignee)
-tasks 1 ── * task_notes
-users 1 ── * task_notes        (autor)
+users 1 ── * posts
+users 1 ── * medias
+medias 1 ── * posts            (og_media_id, opcional)
+categories 1 ── * categories   (parent_id, opcional)
+posts * ── * categories        (via category_post)
+posts * ── * tags              (via post_tag)
 users 1 ── * histories
-users 1 ── * sessions          (opcional)
 histories * ── 1 auditable     (polimórfico)
+users 1 ── * sessions          (opcional, sem FK)
 ```
