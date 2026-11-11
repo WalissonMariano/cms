@@ -46,6 +46,9 @@ class SettingController extends Controller
             'social_facebook' => ['nullable', 'url', 'max:255'],
             'social_x' => ['nullable', 'url', 'max:255'],
             'social_youtube' => ['nullable', 'url', 'max:255'],
+            'social_linkedin' => ['nullable', 'url', 'max:255'],
+            'social_github' => ['nullable', 'url', 'max:255'],
+            'social_email' => ['nullable', 'email', 'max:255'],
             'tracking_code' => ['nullable', 'string', 'max:5000'],
         ]);
     }

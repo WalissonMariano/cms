@@ -71,6 +71,18 @@
                         <label for="social_youtube">YouTube</label>
                         <input type="url" id="social_youtube" name="social_youtube" value="{{ old('social_youtube', $settings['social_youtube']) }}">
                     </div>
+                    <div class="form-page-field">
+                        <label for="social_linkedin">LinkedIn</label>
+                        <input type="url" id="social_linkedin" name="social_linkedin" value="{{ old('social_linkedin', $settings['social_linkedin']) }}">
+                    </div>
+                    <div class="form-page-field">
+                        <label for="social_github">GitHub</label>
+                        <input type="url" id="social_github" name="social_github" value="{{ old('social_github', $settings['social_github']) }}">
+                    </div>
+                    <div class="form-page-field">
+                        <label for="social_email">E-mail</label>
+                        <input type="email" id="social_email" name="social_email" value="{{ old('social_email', $settings['social_email']) }}">
+                    </div>
                     <div class="form-page-field form-page-field--full">
                         <label for="tracking_code">Códigos de rastreamento</label>
                         <textarea id="tracking_code" name="tracking_code" rows="6">{{ old('tracking_code', $settings['tracking_code']) }}</textarea>

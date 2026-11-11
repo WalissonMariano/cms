@@ -7,7 +7,6 @@ use App\Models\Register\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
@@ -48,6 +47,6 @@ class Media extends Model
             default => $this->path,
         };
 
-        return Storage::disk($this->disk)->url($path);
+        return '/storage/'.ltrim((string) $path, '/');
     }
 }

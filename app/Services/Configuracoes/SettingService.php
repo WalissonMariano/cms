@@ -20,6 +20,9 @@ class SettingService
         'social_facebook',
         'social_x',
         'social_youtube',
+        'social_linkedin',
+        'social_github',
+        'social_email',
         'tracking_code',
     ];
 
